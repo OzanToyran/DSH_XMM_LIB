@@ -1,0 +1,1 @@
+eexpmap imageset=PNimage.img attitudeset=P0303210201OBX000ATTTSR0000.FIT eventset=P0303210201PNS003PIEVLI0000.FTZ expimageset=expo_map.fits withdetcoords=no withvignetting=yes usefastpixelization=no usedlimap=no attrebin=4 pimin=2000 pimax=4500

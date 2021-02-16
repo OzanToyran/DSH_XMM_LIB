@@ -1,0 +1,7 @@
+PRO combine_radprof,
+
+  equalchan,[2,6]
+
+  spawn, "eradial imageset=expo_map.fits srcexp='(X,Y) in circle(26940.5,27660.6,5000)' psfenergy=" + strtrim(eqchan[0,1]) + " radprofset=denemerad.ds"
+  
+end

@@ -1,0 +1,137 @@
+PRO checklc,file1,file2,complc=complc,comppds=comppds,rate1=rate1,rate2=rate2,time1=time1,time2=time2
+
+;     This program plots lightcurve and power spectrum of an XMM
+;     lightcurve data
+;
+;
+; INPUTS
+; 
+; file  : Name of the xmm lightcurve file                      
+;
+; OUTPUTS
+;  
+; time  : time array of the lightcurve 
+;
+; rate  : array containing counts
+;
+; error : error in the rate
+;
+; info  : structure carrying information on lightcurve
+;
+; OPTIONAL OUTPUTS
+;
+; complc  : if set, plot 2 lightcurves to compare
+;
+; comppds : if set, plot powerspectrums for the lightcurves
+;
+;  
+;
+;
+; USES  
+;
+; readxmmlc.pro
+; fourierfreq.pro
+; psd.pro
+;  
+; LOGS
+; Created by Ozan Toyran, 18.08.2017
+;
+;  
+
+  IF NOT keyword_set(complc) THEN complc=0
+  IF NOT keyword_set(comppds) THEN comppds=0
+
+  IF (file2 EQ '') THEN comppar=1. ELSE comppar=2.    ; comppar is an arbitrary parameter to check if there is are more than 1 lightcurves
+
+  
+  IF (comppar EQ 1.) THEN BEGIN
+
+  print, '****psd_lc_from_lc: Only one file input, plotting lightcurve and psd for it.'
+
+  time1=loadcol(file1,'TIME',ext=1)
+  rate1=loadcol(file1,'RATE',ext=1)
+  error1=loadcol(file1,'ERROR',ext=1)
+  
+  fourierfreq,time1,freq1
+
+  psd,time1,rate1,freq1,pds1,leahy=1
+  psd,time1,error1,freq1,perr1,leahy=1
+  
+  nt1=n_elements(time1)
+  ttime1=DOUBLE(time1-time1(0))
+
+  avgpsd1=avg(pds1)
+
+  
+  !P.Multi=[0,1,3]
+  plot,freq1,pds1,xtitle='Frequency (Hz)',ytitle='Power',title='Power Spectrum'
+  plot,ttime1,rate1,xtitle='Seconds',ytitle='Rate (cnts / s*dt)',title='Light Curve'
+
+  ploterror,freq1,pds1,perr1,/xlog,/nohat,xtitle='Frequency (Hz)',ytitle='Power',title='Power Spectrum'
+  
+  !P.Multi=0
+  
+ENDIF ELSE BEGIN
+
+   time1=loadcol(file1,'TIME',ext=1)
+   rate1=loadcol(file1,'RATE',ext=1)
+   error1=loadcol(file1,'ERROR',ext=1)
+   time2=loadcol(file2,'TIME',ext=1)
+   rate2=loadcol(file2,'RATE',ext=1)
+   error2=loadcol(file2,'ERROR',ext=1)
+   
+   fourierfreq,time1,freq1
+   fourierfreq,time2,freq2
+
+   psd,time1,rate1,freq1,pds1,leahy=1
+   psd,time1,error1,freq1,perr1,leahy=1
+
+   psd,time2,rate2,freq2,pds2,leahy=1
+   psd,time2,error2,freq2,perr2,leahy=1
+
+   nt1=n_elements(time1)
+   nt2=n_elements(time2)
+   ttime1=DOUBLE(time1-time1[0])
+   ttime2=DOUBLE(time2-time2[0])
+
+   avgpsd1=avg(pds1)
+   avgpsd2=avg(pds2)
+
+   IF keyword_set(complc) THEN BEGIN
+
+   !P.Multi=[0,1,2]
+   plot,ttime1-ttime1[0],rate1,xtitle='Seconds',ytitle='Rate (cnts / s*dt)',title='Light Curve 1'
+   plot,ttime2-ttime2[0],rate2,xtitle='Seconds',ytitle='Rate (cnts / s*dt)',title='Light Curve 2'
+
+   !P.Multi=0
+
+   ENDIF ELSE BEGIN
+
+   !P.Multi=[0,1,2]
+
+   plot,ttime1,rate1,xtitle='Seconds',ytitle='Rate (cnts / s*dt)',title='Light Curve'
+   ploterror,freq1,pds1,perr1,/xlog,/nohat,xtitle='Frequency (Hz)',ytitle='Power',title='Power Spectrum'
+
+   !P.Multi=0
+
+   ENDELSE
+   
+ENDELSE
+  
+
+;;
+;; Rebinning Options to be added  
+;;
+
+
+;;
+;;Average Count display
+;;
+
+;;
+;;Avg power info display
+;;
+
+  
+  
+  END

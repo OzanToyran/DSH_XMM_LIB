@@ -1,0 +1,10 @@
+PRO getrprof,eqchan=chaneq
+  
+  spawn, "heainit"
+  spawn, "sasinit"
+
+  
+  spawn, "eradial imageset=PNimage.img srcexp='(X,Y) in circle(26940.5,27660.5,5000)' psfenergy=" + strtrim(CEIL(chaneq[1,0]),1) + " radprofset=deneme123.fits" 
+
+  end
+
